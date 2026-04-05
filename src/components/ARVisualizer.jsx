@@ -12,12 +12,14 @@ export default function ARVisualizer() {
   const fileInputRef = useRef(null);
   const draggingRef = useRef(false);
   const roomStateRef = useRef(roomState);
+  const modelViewerRef = useRef(null);
 
   useEffect(() => {
     roomStateRef.current = roomState;
   }, [roomState]);
 
-  const picks = products.slice(0, 5);
+  const picks = products.slice(0, 6);
+  const currentPick = picks[selectedModel] || picks[0];
 
   const drawRoom = useCallback(() => {
     const canvas = canvasRef.current;
@@ -198,19 +200,58 @@ export default function ARVisualizer() {
           {/* 3D Panel */}
           <div className={`ar-panel ${activeTab === '3d' ? 'active' : ''}`}>
             <p className="ar-panel-label">Interactive — drag to rotate</p>
+            <div className="ar-model-info">
+              <span className="ar-model-name">{currentPick.name}</span>
+              <span className="ar-model-dims">{currentPick.specs?.Dimensions || ''}</span>
+            </div>
             <model-viewer
-              src={picks[selectedModel]?.model || picks[0].model}
-              alt="3D Furniture Model"
+              ref={modelViewerRef}
+              src={currentPick.model}
+              alt={`${currentPick.name} 3D Model`}
               camera-controls
               auto-rotate
-              shadow-intensity="1"
-              exposure="1.2"
+              auto-rotate-delay="1000"
+              rotation-per-second="20deg"
+              shadow-intensity="1.2"
+              shadow-softness="0.8"
+              exposure="1.1"
               environment-image="neutral"
-              style={{ background: 'transparent' }}
+              camera-orbit={currentPick.cameraOrbit || "45deg 65deg 2.5m"}
+              min-camera-orbit="auto auto auto"
+              max-camera-orbit="auto auto 10m"
+              interaction-prompt="auto"
+              interaction-prompt-threshold="3000"
+              style={{
+                background: 'transparent',
+                width: '100%',
+                height: '380px',
+              }}
               ar
               ar-modes="webxr scene-viewer quick-look"
-              ar-scale="auto"
-            />
+              ar-scale="fixed"
+              ar-placement="floor"
+            >
+              <button
+                slot="ar-button"
+                style={{
+                  position: 'absolute',
+                  bottom: '1rem',
+                  right: '1rem',
+                  padding: '0.6rem 1.2rem',
+                  background: 'var(--gold)',
+                  color: 'var(--charcoal)',
+                  border: 'none',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-body)',
+                }}
+              >
+                📱 View in AR
+              </button>
+            </model-viewer>
             <div className="furniture-picker">
               {picks.map((p, i) => (
                 <div
@@ -220,6 +261,7 @@ export default function ARVisualizer() {
                   title={p.name}
                 >
                   <img src={p.img} alt={p.name} crossOrigin="anonymous" />
+                  <div className="furn-pick-label">{p.name.split(' ').slice(0, 2).join(' ')}</div>
                 </div>
               ))}
             </div>
