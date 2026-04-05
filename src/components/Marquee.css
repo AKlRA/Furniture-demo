@@ -1,0 +1,27 @@
+.marquee-strip {
+  background: var(--gold);
+  padding: 0.85rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-inner {
+  display: inline-flex;
+  gap: 0;
+  animation: marquee 22s linear infinite;
+}
+.marquee-inner span {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  padding: 0 2.5rem;
+  font-weight: 500;
+}
+.marquee-inner .dot {
+  color: var(--charcoal);
+  opacity: 0.35;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
